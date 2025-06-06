@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Lotes Recibidos</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f4f4f4;
+            padding: 2rem;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .lote {
+            background: white;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.15);
+        }
+
+        .info {
+            margin-bottom: 1rem;
+        }
+
+        .info strong {
+            display: inline-block;
+            width: 180px;
+        }
+
+        ul {
+            padding-left: 2rem;
+        }
+
+        ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .seccion {
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+<h2>Lotes Ya Recibidos</h2>
+
+<div th:if="${recibidos != null and #lists.isEmpty(recibidos)}">
+    <p style="text-align: center;">No hay lotes recibidos.</p>
+</div>
+
+<div th:if="${recibidos != null}" th:each="lote : ${recibidos}" class="lote">
+    <div class="info">
+        <p><strong>ID Lote:</strong> <span th:text="${lote.id}"></span></p>
+        <p><strong>Proveedor:</strong>
+            <span th:text="${lote.proveedor.nombre + ' (' + lote.proveedor.cif + ')'}"></span>
+        </p>
+        <p><strong>Solicitado por:</strong> <span th:text="${lote.personaSolicitante.nombre}"></span></p>
+        <p><strong>Fecha petición:</strong> <span th:text="${#temporals.format(lote.fechaHoraPeticion, 'dd/MM/yyyy HH:mm')}"></span></p>
+        <p><strong>Recibido por:</strong> 
+            <span th:text="${@serviciosMensajes.obtenerPersonaReceptoraPorLote(lote.id)}"></span>
+        </p>
+        <p><strong>Fecha de recepción:</strong> 
+            <span th:text="${#temporals.format(lote.fechaHoraRecepcion, 'dd/MM/yyyy HH:mm')}"></span>
+        </p>
+        <p><strong>Urgente:</strong> <span th:text="${lote.urgente ? 'Sí' : 'No'}"></span></p>
+    </div>
+
+    <div class="seccion">
+        <strong>Ejemplares creados:</strong>
+        <ul>
+            <li th:each="e : ${@serviciosEjemplares.obtenerPorLote(lote)}"
+                th:text="${e.nombre}"></li>
+        </ul>
+    </div>
+</div>
+<div style="text-align: center; margin-top: 2rem;">
+    <a th:href="@{/lotes/gestionLotes}" 
+       style="background-color: #4CAF50; color: white; padding: 0.5rem 1rem; 
+              border-radius: 5px; text-decoration: none;">
+        Volver
+    </a>
+</div>
+
+</body>
+</html>

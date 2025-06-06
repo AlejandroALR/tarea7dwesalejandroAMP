@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Menú Cliente</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        h2 {
+            margin-bottom: 2rem;
+        }
+
+        a.boton,
+        form button.boton {
+            display: block;
+            width: 200px;
+            margin: 1rem auto;
+            padding: 1rem;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 6px;
+            transition: background 0.2s;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        a.boton:hover,
+        form button.boton:hover {
+            background-color: #45a049;
+        }
+
+        /* Estilos específicos para botón de logout */
+        .logout {
+            background-color: #a03800;
+        }
+
+        .logout:hover {
+            background-color: #871e00;
+        }
+
+        form {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <h2>-+- MENÚ CLIENTE -+-</h2>
+
+    <!-- Ruta correcta para visualizar plantas como cliente -->
+    <a class="boton" th:href="@{/clientes/verPlantasClie}">Ver Plantas</a>
+
+    <!-- Acceso a vista donde se realiza el pedido -->
+    <a class="boton" th:href="@{/pedidos/realizar}">Realizar Pedido</a>
+
+    <!-- Acceso a listado de pedidos hechos por el cliente -->
+    <a class="boton" th:href="@{/pedidos/mis}">Ver Mis Pedidos</a>
+
+    <!-- Cierre de sesión -->
+    <form th:action="@{/logout}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <button type="submit" class="boton logout">Cerrar sesión</button>
+    </form>
+</body>
+</html>

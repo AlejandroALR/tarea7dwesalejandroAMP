@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Modificar Planta</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #f4f4f4;
+            padding: 2rem;
+        }
+
+        .form-container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 6px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        .form-label {
+            font-weight: bold;
+            display: block;
+            margin-top: 1rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            box-sizing: border-box;
+            margin-top: 1rem;
+        }
+
+        .btn-primary {
+            background-color: #4CAF50;
+        }
+
+        .btn-primary:hover {
+            background-color: #388e3c;
+        }
+
+        .btn-secondary {
+            background-color: #8d6e63;
+        }
+
+        .btn-secondary:hover {
+            background-color: #6d4c41;
+        }
+
+
+        .alert {
+            padding: 0.75rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form-container">
+        <h2>Modificar Planta</h2>
+
+        <div th:if="${mensaje}" class="alert alert-success" th:text="${mensaje}"></div>
+
+        <!-- Desplegable para seleccionar planta -->
+        <form th:action="@{/plantas/modificarPlanta/cargar}" method="get">
+            <label for="codigo">Seleccionar planta:</label>
+            <select name="codigo" id="codigo" class="form-control">
+                <option value="" disabled selected>Seleccione una planta</option>
+                <option th:each="planta : ${plantas}" th:value="${planta.codigo}"
+                    th:text="${planta.codigo + ' - ' + planta.nombreComun + ' (' + planta.nombreCientifico + ')'}">
+                </option>
+            </select>
+            <button type="submit" class="btn btn-primary">Cargar</button>
+        </form>
+
+        <hr />
+
+        <!-- Formulario de edición -->
+        <form th:action="@{/plantas/modificarPlanta}" th:object="${plantaSeleccionada}" method="post" novalidate
+            th:if="${plantaSeleccionada.codigo != null}">
+
+            <label for="codigo">Código (no editable):</label>
+            <input type="hidden" th:field="*{codigo}" />
+            <input type="text" class="form-control" th:value="*{codigo}" readonly />
+
+            <label for="nombreCientifico">Nombre Científico:</label>
+            <input type="text" class="form-control" id="nombreCientifico" th:field="*{nombreCientifico}" />
+            <div th:if="${#fields.hasErrors('nombreCientifico')}" th:errors="*{nombreCientifico}"
+                class="alert alert-danger"></div>
+
+            <label for="nombreComun">Nombre Común:</label>
+            <input type="text" class="form-control" id="nombreComun" th:field="*{nombreComun}" />
+            <div th:if="${#fields.hasErrors('nombreComun')}" th:errors="*{nombreComun}" class="alert alert-danger">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        </form>
+
+        <a th:href="@{/plantas/gestionPlantas}" class="btn btn-secondary">Volver</a>
+    </div>
+</body>
+
+</html>

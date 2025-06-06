@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Filtrar Mensajes</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #f4f4f4;
+            padding: 2rem;
+        }
+
+        .form-container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 6px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: bold;
+            display: block;
+            margin-top: 1rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            box-sizing: border-box;
+            margin-top: 1rem;
+        }
+
+        .btn-primary {
+            background-color: #4CAF50;
+        }
+
+        .btn-primary:hover {
+            background-color: #388e3c;
+        }
+
+        .btn-secondary {
+            background-color: #8d6e63;
+        }
+
+        .btn-secondary:hover {
+            background-color: #6d4c41;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 2rem;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #3f51b5;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .alert {
+            padding: 0.75rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+    </style>
+</head>
+<body>
+<div class="form-container">
+    <h2>Filtrar Mensajes</h2>
+
+    <form th:action="@{/mensajes/filtrarMensaje}" th:object="${filtro}" method="post">
+        <label for="idPersona" class="form-label">Persona:</label>
+        <select th:field="*{idPersona}" class="form-control">
+            <option value="" selected>-- Todas --</option>
+            <option th:each="p : ${personas}" th:value="${p.id}" th:text="${p.nombre}"></option>
+        </select>
+
+        <label for="codigoPlanta" class="form-label">Tipo de Planta:</label>
+        <select th:field="*{codigoPlanta}" class="form-control">
+            <option value="" selected>-- Todas --</option>
+            <option th:each="pl : ${plantas}" th:value="${pl.codigo}" th:text="${pl.nombreComun + ' (' + pl.nombreCientifico + ')'}"></option>
+        </select>
+
+        <label for="fechaDesde" class="form-label">Desde:</label>
+        <input type="date" th:field="*{fechaDesde}" class="form-control" />
+
+        <label for="fechaHasta" class="form-label">Hasta:</label>
+        <input type="date" th:field="*{fechaHasta}" class="form-control" />
+
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+        <a th:href="@{/mensajes/gestionMensajes}" class="btn btn-secondary">Volver</a>
+    </form>
+
+    <div th:if="${#lists.isEmpty(resultados)}">
+        <p style="margin-top:2rem; text-align: center;">No se encontraron mensajes con esos criterios.</p>
+    </div>
+
+    <table th:if="${!#lists.isEmpty(resultados)}">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Fecha</th>
+            <th>Persona</th>
+            <th>Ejemplar</th>
+            <th>Planta</th>
+            <th>Mensaje</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="m : ${resultados}">
+            <td th:text="${m.id}"></td>
+            <td th:text="${#temporals.format(m.fecha, 'yyyy-MM-dd HH:mm')}"></td>
+            <td th:text="${m.persona.nombre}"></td>
+            <td th:text="${m.ejemplar.nombre}"></td>
+            <td th:text="${m.ejemplar.planta.nombreComun}"></td>
+            <td th:text="${m.mensaje}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

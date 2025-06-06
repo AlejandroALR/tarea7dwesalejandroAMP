@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Realizar Pedido</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #f4f4f4;
+            padding: 2rem;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+            background: white;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        input[type="number"] {
+            width: 60px;
+            text-align: center;
+        }
+
+        .boton-grande {
+            display: inline-block;
+            width: 200px;
+            padding: 1rem;
+            text-align: center;
+            font-size: 1rem;
+            font-weight: bold;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .boton-verde {
+            background-color: #4CAF50;
+        }
+
+        .boton-verde:hover {
+            background-color: #3e8e41;
+        }
+
+        .boton-marron {
+            background-color: #8B4513;
+        }
+
+        .boton-marron:hover {
+            background-color: #6b3610;
+        }
+
+        .boton-amarillo {
+            background-color: #f39c12;
+        }
+
+        .boton-amarillo:hover {
+            background-color: #d78f0c;
+        }
+
+        .botones {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Selecciona las plantas que deseas pedir</h2>
+
+    <form th:action="@{/pedidos/realizar}" method="post">
+        <table>
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Nombre</th>
+                    <th>Ejemplares disponibles</th>
+                    <th>Cantidad a pedir</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="planta : ${plantas}">
+                    <td>
+                        <span th:text="${planta.codigo}"></span>
+                        <input type="hidden" name="codPlanta" th:value="${planta.codigo}" />
+                    </td>
+                    <td>
+                        <span th:text="${planta.nombreComun}"></span>
+                        <input type="hidden" name="nombrePlanta" th:value="${planta.nombreComun}" />
+                    </td>
+                    <td
+                        th:text="${stockDisponible != null and stockDisponible.containsKey(planta.codigo) ? stockDisponible[planta.codigo] : 0}">
+                    </td>
+                    <td>
+                        <input type="number" name="cantidad" min="0"
+                            th:attr="max=${stockDisponible != null and stockDisponible.containsKey(planta.codigo) ? stockDisponible[planta.codigo] : 0}"
+                            value="0" />
+
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="botones">
+            <button type="submit" class="boton-grande boton-verde">Añadir al carrito</button>
+
+            <form th:action="@{/pedidos/carrito}" method="get">
+                <button type="submit" class="boton-grande boton-verde">Ver Carrito</button>
+            </form>
+        </div>
+
+        <a th:href="@{/cliente}" class="boton-grande boton-marron" style="display: block; margin: 2rem auto 0;">
+            Volver
+        </a>
+    </form>
+
+</body>
+
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Cliente</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #f4f4f4;
+            padding: 2rem;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        form {
+            background: white;
+            padding: 2rem;
+            max-width: 600px;
+            margin: 0 auto;
+            border-radius: 6px;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            font-weight: bold;
+            margin-top: 1rem;
+            display: block;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="date"] {
+            width: 100%;
+            padding: 0.5rem;
+            margin-top: 0.2rem;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        .error {
+            color: red;
+            font-size: 0.9em;
+            margin-top: -0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .boton-verde {
+            background-color: #4CAF50;
+            color: white;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .boton-verde:hover {
+            background-color: #3e8e41;
+        }
+
+        .boton-secundario {
+            background-color: #888;
+            color: white;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 1rem;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .boton-secundario:hover {
+            background-color: #555;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Registro de Cliente</h2>
+
+    <div th:if="${mensaje}" class="alert-success" th:text="${mensaje}"></div>
+
+    <form th:action="@{/clientes/registro}" th:object="${cliente}" method="post">
+
+        <label>Nombre completo</label>
+        <input type="text" th:field="*{nombreCompleto}" />
+        <div th:if="${#fields.hasErrors('nombreCompleto')}" th:errors="*{nombreCompleto}" class="error"></div>
+
+        <label>Fecha de nacimiento</label>
+        <input type="date" th:field="*{fechaNacimiento}" />
+        <div th:if="${#fields.hasErrors('fechaNacimiento')}" th:errors="*{fechaNacimiento}" class="error"></div>
+
+        <label>NIF/NIE</label>
+        <input type="text" th:field="*{nifNie}" />
+        <div th:if="${#fields.hasErrors('nifNie')}" th:errors="*{nifNie}" class="error"></div>
+
+        <label>Dirección</label>
+        <input type="text" th:field="*{direccion}" />
+        <div th:if="${#fields.hasErrors('direccion')}" th:errors="*{direccion}" class="error"></div>
+
+        <label>Teléfono</label>
+        <input type="text" th:field="*{telefono}" />
+        <div th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}" class="error"></div>
+
+        <label>Email</label>
+        <input type="email" th:field="*{email}" />
+        <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error"></div>
+
+        <label>Usuario</label>
+        <input type="text" th:field="*{usuario}" />
+        <div th:if="${#fields.hasErrors('usuario')}" th:errors="*{usuario}" class="error"></div>
+
+        <label>Contraseña</label>
+        <input type="password" th:field="*{password}" />
+        <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error"></div>
+
+        <button type="submit" class="boton-verde">Registrarse</button>
+
+        <a th:href="@{/login}" class="boton-secundario">Volver</a>
+    </form>
+
+</body>
+
+</html>

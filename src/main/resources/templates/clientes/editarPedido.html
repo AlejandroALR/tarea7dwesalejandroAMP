@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Estado del Pedido</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #f4f4f4;
+            padding: 2rem;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+            border-radius: 6px;
+        }
+
+        label, select, button {
+            display: block;
+            width: 100%;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        select {
+            padding: 0.5rem;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #3e8e41;
+        }
+
+        .volver {
+            display: block;
+            text-align: center;
+            margin-top: 2rem;
+            color: #4CAF50;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Editar Estado del Pedido</h2>
+
+<form th:action="@{/personal/pedido/{id}/editar(id=${pedido.id})}" method="post">
+    <label for="estado">Estado:</label>
+    <select name="estado" id="estado">
+        <option th:each="estado : ${estados}"
+                th:value="${estado}"
+                th:text="${estado}"
+                th:selected="${estado} == ${pedido.estado}">
+        </option>
+    </select>
+    <button type="submit">Guardar Cambios</button>
+</form>
+
+<a th:href="@{/personal/filtrarPedidos}" class="volver">← Volver</a>
+
+</body>
+</html>

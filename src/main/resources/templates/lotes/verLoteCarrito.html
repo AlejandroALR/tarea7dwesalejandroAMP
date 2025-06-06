@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Carrito de Lote</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #f4f4f4;
+            padding: 2rem;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        form {
+            margin-top: 2rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group select,
+        .form-group input[type="number"] {
+            width: 100%;
+            padding: 0.5rem;
+        }
+
+        .botones {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .botones button {
+            flex: 1;
+            padding: 0.7rem;
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .botones button:hover {
+            background-color: #45a049;
+        }
+
+        .mensaje {
+            color: green;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .error {
+            color: red;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .eliminar {
+            color: red;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .boton-volver {
+            display: block;
+            margin: 2rem auto 0;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            width: fit-content;
+        }
+
+        .boton-volver:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Gestión del Lote en Sesión</h2>
+
+    <div th:if="${exito}" class="mensaje" th:text="${exito}"></div>
+    <div th:if="${error}" class="error" th:text="${error}"></div>
+
+    <table th:if="${!lote.isEmpty()}">
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Nombre</th>
+                <th>Cantidad</th>
+                <th>Eliminar</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="item : ${lote}">
+                <td th:text="${item.codigoPlanta}">Código</td>
+                <td th:text="${item.nombrePlanta}">Nombre</td>
+                <td th:text="${item.cantidad}">Cantidad</td>
+                <td>
+                    <a th:href="@{/lotes/eliminar(codigoPlanta=${item.codigoPlanta})}" class="eliminar">X</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <form th:action="@{/lotes/añadir}" method="post">
+        <div class="form-group">
+            <label for="codigoPlanta">Planta:</label>
+            <select name="codigoPlanta" id="codigoPlanta" required>
+                <option value="" disabled selected>-- Selecciona una planta --</option>
+                <option th:each="p : ${@serviciosPlantas.listarTodas()}" th:value="${p.codigo}"
+                    th:text="${p.nombreComun} + ' (' + ${p.codigo} + ')'"></option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="cantidad">Cantidad (1-50):</label>
+            <input type="number" name="cantidad" id="cantidad" min="1" max="50" required>
+        </div>
+
+        <div class="botones">
+            <button type="submit">Añadir Planta</button>
+        </div>
+    </form>
+
+    <form th:action="@{/lotes/confirmar}" method="post" th:if="${!lote.isEmpty()}">
+        <div class="form-group">
+            <label for="idProveedor">Proveedor:</label>
+            <select name="idProveedor" id="idProveedor" required>
+                <option value="" disabled selected>-- Selecciona proveedor --</option>
+                <option th:each="prov : ${@serviciosProveedores.listarTodos()}" th:value="${prov.id}"
+                    th:text="${prov.nombre} + ' (' + ${prov.cif} + ')'"></option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label><input type="checkbox" name="urgente"> Lote Urgente</label>
+        </div>
+
+        <div class="botones">
+            <button type="submit">Confirmar Lote</button>
+        </div>
+    </form>
+
+    <a th:href="@{/lotes/gestionLotes}" class="boton-volver">Volver</a>
+
+</body>
+
+</html>

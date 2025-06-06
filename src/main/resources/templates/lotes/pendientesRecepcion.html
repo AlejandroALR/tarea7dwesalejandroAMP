@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Lotes Pendientes de Recepción</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f4f4f4;
+            padding: 2rem;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .lote {
+            background: white;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.15);
+        }
+
+        .info {
+            margin-bottom: 1rem;
+        }
+
+        .info strong {
+            display: inline-block;
+            width: 160px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 0.8rem;
+            text-align: center;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        form {
+            text-align: right;
+        }
+
+        .boton {
+            background-color: #4CAF50;
+            color: white;
+            padding: 0.5rem 1.2rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .boton:hover {
+            background-color: #45a049;
+        }
+
+    </style>
+</head>
+<body>
+    <h2>Lotes Pendientes de Recepción</h2>
+
+    <div th:if="${pendientes.isEmpty()}">
+        <p style="text-align: center;">No hay lotes pendientes de recepción.</p>
+    </div>
+
+    <div th:each="lote : ${pendientes}" class="lote">
+        <div class="info">
+            <p><strong>ID Lote:</strong> <span th:text="${lote.id}"></span></p>
+            <p><strong>Proveedor:</strong> <span th:text="${lote.proveedor.nombre + ' (' + lote.proveedor.cif + ')'}"></span></p>
+            <p><strong>Solicitado por:</strong> <span th:text="${lote.personaSolicitante.nombre}"></span></p>
+            <p><strong>Fecha petición:</strong> <span th:text="${#temporals.format(lote.fechaHoraPeticion, 'dd/MM/yyyy HH:mm')}"></span></p>
+            <p><strong>Urgente:</strong> <span th:text="${lote.urgente ? 'Sí' : 'No'}"></span></p>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Código Planta</th>
+                    <th>Nombre Planta</th>
+                    <th>Cantidad</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="comp : ${composiciones[lote.id]}">
+                    <td th:text="${comp.planta.codigo}"></td>
+                    <td th:text="${comp.planta.nombreComun}"></td>
+                    <td th:text="${comp.cantidad}"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <form th:action="@{/lotes/recepcionar}" method="post">
+            <input type="hidden" name="idLote" th:value="${lote.id}">
+            <button type="submit" class="boton">Confirmar Recepción</button>
+        </form>
+    </div>
+
+    <div style="text-align: center; margin-top: 2rem;">
+        <a th:href="@{/lotes/gestionLotes}" class="boton">Volver</a>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de los Lotes</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 2rem;
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 300px;
+        }
+
+        .menu a {
+            display: block;
+            padding: 1rem;
+            text-align: center;
+            background: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+
+        .menu a:hover {
+            background: #1c7a1f;
+        }
+
+        .volver {
+            background-color: #999;
+        }
+
+        .volver:hover {
+            background-color: #777;
+        }
+    </style>
+</head>
+<body>
+    <h1>Gestión de los Lotes</h1>
+    <div class="menu">
+        <a th:href="@{/lotes/carrito}">Registrar Lote (Carrito)</a>
+        <a th:href="@{/lotes/pendientes}">Recepcionar Lotes Pendientes</a>
+        <a th:href="@{/lotes/recibidos}">Ver Lotes Recibidos</a>
+        <a th:href="@{/personal}" class="volver">Volver</a>
+    </div>
+</body>
+</html>

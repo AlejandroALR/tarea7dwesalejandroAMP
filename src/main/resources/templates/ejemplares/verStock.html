@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Stock de Ejemplares</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #f4f4f4;
+            padding: 2rem;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .boton-marron {
+            display: block;
+            width: 200px;
+            margin: 2rem auto 0;
+            padding: 1rem;
+            text-align: center;
+            font-size: 1rem;
+            font-weight: bold;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            background-color: #8B4513;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .boton-marron:hover {
+            background-color: #6b3610;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Stock de Ejemplares Disponibles</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Código de Planta</th>
+            <th>Nombre Común</th>
+            <th>Ejemplares Disponibles</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="fila : ${stock}">
+            <td th:text="${fila[0]}">Código</td>
+            <td th:text="${fila[1]}">Nombre</td>
+            <td th:text="${fila[2]}">0</td>
+        </tr>
+    </tbody>
+</table>
+
+<a th:href="@{/personal}" class="boton-marron">Volver al Menú</a>
+
+</body>
+</html>

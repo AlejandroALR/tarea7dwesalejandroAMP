@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Acceso Denegado</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2rem;
+        }
+
+        a {
+            color: #721c24;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚫 Acceso Denegado</h1>
+    <p>No tienes permiso para acceder a esta página.</p>
+    <a th:href="@{/}">Volver al inicio</a>
+</body>
+</html>

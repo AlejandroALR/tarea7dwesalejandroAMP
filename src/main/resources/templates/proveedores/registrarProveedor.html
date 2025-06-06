@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrar Proveedor</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f4f4f4;
+            padding: 2rem;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        form {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            max-width: 500px;
+            margin: 0 auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.7rem;
+            margin-top: 0.3rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .error {
+            color: red;
+            font-size: 0.9rem;
+        }
+
+        .boton {
+            display: block;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .boton-volver {
+            display: inline-block;
+            padding: 0.7rem 1.5rem;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-top: 2rem;
+        }
+
+        .volver-container {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Registrar Proveedor</h2>
+
+<form th:action="@{/admin/registrarProveedor}" th:object="${proveedor}" method="post">
+
+    <label>Nombre:
+        <input type="text" th:field="*{nombre}" />
+        <div class="error" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+    </label>
+
+    <label>CIF:
+        <input type="text" th:field="*{cif}" />
+        <div class="error" th:if="${#fields.hasErrors('cif')}" th:errors="*{cif}"></div>
+    </label>
+
+    <label>Nombre de usuario:
+        <input type="text" th:field="*{usuario}" />
+        <div class="error" th:if="${#fields.hasErrors('usuario')}" th:errors="*{usuario}"></div>
+    </label>
+
+    <label>Contraseña:
+        <input type="password" th:field="*{password}" />
+        <div class="error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+    </label>
+
+    <button type="submit" class="boton">Registrar</button>
+</form>
+
+<div class="volver-container">
+    <a th:href="@{/admin}" class="boton-volver">Volver al menú</a>
+</div>
+
+</body>
+</html>
