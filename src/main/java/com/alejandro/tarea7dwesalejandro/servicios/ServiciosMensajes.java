@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alejandro.tarea7dwesalejandro.dto.RegistroMensajeDTO;
 import com.alejandro.tarea7dwesalejandro.modelo.Mensajes;
@@ -26,6 +27,7 @@ public class ServiciosMensajes {
 	@Autowired
 	private PersonasRepository personasRepository;
 
+	@Transactional
 	public Mensajes guardar(Mensajes mensaje) {
 		return mensajesRepository.save(mensaje);
 	}

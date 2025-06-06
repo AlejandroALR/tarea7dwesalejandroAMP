@@ -51,5 +51,7 @@ public interface EjemplaresRepository extends JpaRepository<Ejemplares, Long> {
     long countByPlanta_CodigoAndDisponibleTrue(String codPlanta);
     
     List<Ejemplares> findByLote(Lote lote);
+    
+    
 
 }

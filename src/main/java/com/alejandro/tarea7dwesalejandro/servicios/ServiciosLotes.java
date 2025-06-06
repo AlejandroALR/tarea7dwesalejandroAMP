@@ -8,9 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alejandro.tarea7dwesalejandro.modelo.ComposicionLote;
+import com.alejandro.tarea7dwesalejandro.modelo.Ejemplares;
 import com.alejandro.tarea7dwesalejandro.modelo.Lote;
 import com.alejandro.tarea7dwesalejandro.modelo.Personas;
+import com.alejandro.tarea7dwesalejandro.modelo.Plantas;
 import com.alejandro.tarea7dwesalejandro.modelo.Proveedor;
+import com.alejandro.tarea7dwesalejandro.repositorios.ComposicionLoteRepository;
+import com.alejandro.tarea7dwesalejandro.repositorios.EjemplaresRepository;
 import com.alejandro.tarea7dwesalejandro.repositorios.LoteRepository;
 import com.alejandro.tarea7dwesalejandro.repositorios.PersonasRepository;
 import com.alejandro.tarea7dwesalejandro.repositorios.ProveedorRepository;
@@ -26,14 +31,25 @@ public class ServiciosLotes {
 
     @Autowired
     private ProveedorRepository proveedorRepository;
+    
+    @Autowired
+    private EjemplaresRepository ejemplaresRepository;
+    
+    @Autowired
+    private ComposicionLoteRepository composicionLoteRepository;
 
+//    public List<Lote> listarLotesPendientes() {
+//        return loteRepository.findByFechaHoraRecepcionIsNull();
+//    }
+    
     public List<Lote> listarLotesPendientes() {
-        return loteRepository.findByFechaHoraRecepcionIsNull();
+        return loteRepository.findByEstado("NUEVO");
     }
 
-    public List<Lote> listarLotesRecibidos() {
-        return loteRepository.findByFechaHoraRecepcionIsNotNull();
-    }
+
+//    public List<Lote> listarLotesRecibidos() {
+//        return loteRepository.findByFechaHoraRecepcionIsNotNull();
+//    }
 
     @Transactional
     public Lote registrarLote(Long idProveedor, Long idPersona, boolean urgente) {
@@ -94,22 +110,73 @@ public class ServiciosLotes {
         return true;
     }
     
+//    @Transactional
+//    public void recepcionarLote(Long idLote) {
+//        Lote lote = loteRepository.findById(idLote)
+//                .orElseThrow(() -> new IllegalArgumentException("Lote no encontrado"));
+//
+//        if (lote.getEstado().equals("CANCELADO")) {
+//            throw new IllegalStateException("No se puede recepcionar un lote cancelado");
+//        }
+//
+//        if (lote.getEstado().equals("TERMINADO")) {
+//            throw new IllegalStateException("Este lote ya fue recepcionado");
+//        }
+//
+//        lote.setEstado("TERMINADO");
+//        lote.setFechaHoraRecepcion(LocalDateTime.now());
+//        loteRepository.save(lote);
+//    }
+    
     @Transactional
-    public void recepcionarLote(Long idLote) {
+    public void recepcionarLote(Long idLote, Long idPersona) {
         Lote lote = loteRepository.findById(idLote)
                 .orElseThrow(() -> new IllegalArgumentException("Lote no encontrado"));
 
-        if (lote.getEstado().equals("CANCELADO")) {
+        String estado = lote.getEstado();
+        if (estado == null) {
+            throw new IllegalStateException("El lote no tiene un estado definido");
+        }
+
+        if (estado.equals("CANCELADO")) {
             throw new IllegalStateException("No se puede recepcionar un lote cancelado");
         }
 
-        if (lote.getEstado().equals("TERMINADO")) {
+        if (estado.equals("TERMINADO") || lote.getFechaHoraRecepcion() != null) {
             throw new IllegalStateException("Este lote ya fue recepcionado");
         }
+        Personas persona = personasRepository.findById(idPersona)
+                .orElseThrow(() -> new RuntimeException("Persona no encontrada"));
+
+        lote.setPersonaReceptora(persona);
 
         lote.setEstado("TERMINADO");
         lote.setFechaHoraRecepcion(LocalDateTime.now());
         loteRepository.save(lote);
+
+        // Obtener las composiciones del lote
+        List<ComposicionLote> composiciones = composicionLoteRepository.findByLote(lote);
+
+        for (ComposicionLote comp : composiciones) {
+            Plantas planta = comp.getPlanta();
+            int cantidad = comp.getCantidad();
+
+            // Contar cuántos ejemplares hay ya de esa planta
+            long existentes = ejemplaresRepository.countByPlanta(planta);
+
+            for (int i = 1; i <= cantidad; i++) {
+                Ejemplares ejemplar = new Ejemplares();
+                ejemplar.setPlanta(planta);
+                ejemplar.setNombre(planta.getCodigo() + "_" + (existentes + i));
+                ejemplar.setDisponible(true);
+                ejemplar.setLote(lote);
+                ejemplaresRepository.save(ejemplar);
+            }
+        }
+    }
+
+    public List<Lote> listarLotesRecibidos() {
+        return loteRepository.findByEstadoOrderByFechaHoraRecepcionDesc("TERMINADO");
     }
 
     

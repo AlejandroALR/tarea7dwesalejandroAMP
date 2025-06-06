@@ -31,6 +31,8 @@ public interface LoteRepository extends JpaRepository<Lote, Long> {
     	       "WHERE l.proveedor = :proveedor")
     	List<Lote> findByProveedorConItems(@Param("proveedor") Proveedor proveedor);
 
+    List<Lote> findByEstado(String estado);
 
+    List<Lote> findByEstadoOrderByFechaHoraRecepcionDesc(String estado);
 
 }

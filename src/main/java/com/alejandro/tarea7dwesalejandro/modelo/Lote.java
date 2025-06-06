@@ -19,8 +19,8 @@ public class Lote implements Serializable {
     @ManyToOne
     private Personas personaSolicitante;
     
-//    @ManyToOne
-//    private Personas personaReceptora;
+    @ManyToOne
+    private Personas personaReceptora;
 
     private LocalDateTime fechaHoraPeticion;
 
@@ -97,5 +97,15 @@ public class Lote implements Serializable {
     public void setItems(List<ItemLote> items) {
         this.items = items;
     }
+
+	public Personas getPersonaReceptora() {
+		return personaReceptora;
+	}
+
+	public void setPersonaReceptora(Personas personaReceptora) {
+		this.personaReceptora = personaReceptora;
+	}
+    
+    
     
 }

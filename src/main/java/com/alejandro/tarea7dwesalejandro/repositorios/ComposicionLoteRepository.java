@@ -9,4 +9,6 @@ import com.alejandro.tarea7dwesalejandro.modelo.Lote;
 
 public interface ComposicionLoteRepository extends JpaRepository<ComposicionLote, Long> {
     List<ComposicionLote> findByLote(Lote lote);
+    
+    
 }

@@ -21,7 +21,7 @@ public class ProveedorController {
 
     @GetMapping("/registrar")
     public String mostrarFormulario(Model model) {
-        model.addAttribute("proveedor", new RegistroProveedorDTO());
+        model.addAttribute("registroProveedor", new RegistroProveedorDTO());
         return "proveedores/registrarProveedor";
     }
 

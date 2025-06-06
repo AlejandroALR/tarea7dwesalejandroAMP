@@ -43,7 +43,7 @@
 <div class="contenedor">
     <h2>Menú Proveedor</h2>
 
-    <a href="/proveedor/misLotes" class="boton">Ver Mis Lotes</a>
+    <a href="/proveedores/misLotes" class="boton">Ver Mis Lotes</a>
     <form th:action="@{/logout}" method="post">
       <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
       <button type="submit" class="logout">Cerrar sesión</button>

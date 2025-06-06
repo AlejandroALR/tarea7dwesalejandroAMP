@@ -74,7 +74,7 @@
 
 <h2>Registrar Proveedor</h2>
 
-<form th:action="@{/admin/registrarProveedor}" th:object="${proveedor}" method="post">
+<form th:action="@{/admin/registrarProveedor}" th:object="${registroProveedor}" method="post">
 
     <label>Nombre:
         <input type="text" th:field="*{nombre}" />
@@ -105,3 +105,4 @@
 
 </body>
 </html>
+

@@ -31,6 +31,17 @@ public class Proveedor implements Serializable {
     
 //    @Column
 //    private String usuario = credenciales.getUsuario();
+    
+    @Column(nullable = false)
+    private String usuario;
+
+    public String getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(String usuario) {
+        this.usuario = usuario;
+    }
 
     public Long getId() {
         return id;

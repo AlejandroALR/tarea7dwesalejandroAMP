@@ -2,15 +2,23 @@ package com.alejandro.tarea7dwesalejandro.controladores;
 
 import com.alejandro.tarea7dwesalejandro.dto.ItemLoteDTO;
 import com.alejandro.tarea7dwesalejandro.modelo.ComposicionLote;
+import com.alejandro.tarea7dwesalejandro.modelo.Ejemplares;
 import com.alejandro.tarea7dwesalejandro.modelo.Lote;
+import com.alejandro.tarea7dwesalejandro.modelo.Mensajes;
+import com.alejandro.tarea7dwesalejandro.modelo.Personas;
 import com.alejandro.tarea7dwesalejandro.modelo.Plantas;
+import com.alejandro.tarea7dwesalejandro.repositorios.CredencialesRepository;
 import com.alejandro.tarea7dwesalejandro.repositorios.PersonasRepository;
 import com.alejandro.tarea7dwesalejandro.servicios.ServiciosComposicionLote;
+import com.alejandro.tarea7dwesalejandro.servicios.ServiciosEjemplares;
 import com.alejandro.tarea7dwesalejandro.servicios.ServiciosLotes;
+import com.alejandro.tarea7dwesalejandro.servicios.ServiciosMensajes;
+import com.alejandro.tarea7dwesalejandro.servicios.ServiciosPersonas;
 import com.alejandro.tarea7dwesalejandro.servicios.ServiciosPlantas;
 import com.alejandro.tarea7dwesalejandro.servicios.ServiciosProveedores;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.security.core.Authentication;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Controller
@@ -44,6 +53,18 @@ public class LoteController {
     
     @Autowired
     private PersonasRepository personasRepository;
+    
+    @Autowired
+    private CredencialesRepository credencialesRepository;
+
+    @Autowired
+    private ServiciosEjemplares serviciosEjemplares;
+
+    @Autowired
+    private ServiciosMensajes serviciosMensajes;
+
+    @Autowired
+    private ServiciosPersonas serviciosPersonas;
 
     @GetMapping("/carrito")
     public String verCarrito(Model model, HttpSession session) {
@@ -144,26 +165,101 @@ public class LoteController {
         return "lotes/lotesRecibidos";
     }
     
+//    @GetMapping("/pendientes")
+//    public String mostrarPendientesRecepcion(Model model) {
+//        List<Lote> pendientes = serviciosLotes.listarLotesPendientes();
+//        model.addAttribute("pendientes", pendientes);
+//        return "lotes/pendientesRecepcion";
+//    }
+    
     @GetMapping("/pendientes")
     public String mostrarPendientesRecepcion(Model model) {
         List<Lote> pendientes = serviciosLotes.listarLotesPendientes();
+
+        Map<Long, List<ComposicionLote>> composiciones = new HashMap<>();
+        for (Lote lote : pendientes) {
+            composiciones.put(lote.getId(), serviciosComposicionLote.obtenerPorLote(lote));
+        }
+
         model.addAttribute("pendientes", pendientes);
+        model.addAttribute("composiciones", composiciones);
         return "lotes/pendientesRecepcion";
     }
 
+//    @PostMapping("/recepcionar")
+//    public String recepcionarLote(@RequestParam Long idLote,
+//                                  RedirectAttributes redirect,
+//                                  Model model) {
+//        try {
+//            serviciosLotes.recepcionarLote(idLote);
+//            redirect.addFlashAttribute("exito", "Lote recepcionado correctamente.");
+//        } catch (IllegalStateException e) {
+//            redirect.addFlashAttribute("error", e.getMessage());
+//        }
+//        return "redirect:/lotes/pendientes";
+//    }
+    
+//    @PostMapping("/recepcionar")
+//    public String recepcionarLote(@RequestParam Long idLote,
+//                                  RedirectAttributes redirect,
+//                                  Model model,
+//                                  Authentication auth) {
+//        try {
+//            String usuario = auth.getName();
+//            Long idPersona = credencialesRepository.findByUsuario(usuario)
+//                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"))
+//                    .getPersona().getId();
+//
+//            serviciosLotes.recepcionarLote(idLote, idPersona);
+//            redirect.addFlashAttribute("exito", "Lote recepcionado correctamente.");
+//        } catch (IllegalStateException e) {
+//            redirect.addFlashAttribute("error", e.getMessage());
+//        }
+//        return "redirect:/lotes/pendientes";
+//    }
+    
     @PostMapping("/recepcionar")
-    public String recepcionarLote(@RequestParam Long idLote,
-                                  RedirectAttributes redirect,
-                                  Model model) {
-        try {
-            serviciosLotes.recepcionarLote(idLote);
-            redirect.addFlashAttribute("exito", "Lote recepcionado correctamente.");
-        } catch (IllegalStateException e) {
-            redirect.addFlashAttribute("error", e.getMessage());
+    @Transactional
+    public String confirmarRecepcion(@RequestParam Long idLote, Authentication auth) {
+        Lote lote = serviciosLotes.buscarPorId(idLote)
+                .orElseThrow(() -> new RuntimeException("Lote no encontrado"));
+
+        String username = auth.getName();
+        Personas receptor = serviciosPersonas.buscarPorUsuario(username)
+                .orElseThrow(() -> new RuntimeException("Persona no encontrada"));
+        lote.setEstado("TERMINADO");
+        lote.setFechaHoraRecepcion(LocalDateTime.now());
+        lote.setPersonaReceptora(receptor);
+        serviciosLotes.guardar(lote);
+
+        List<ComposicionLote> composicion = serviciosComposicionLote.obtenerPorLote(lote);
+
+        for (ComposicionLote comp : composicion) {
+        	long existentes = serviciosEjemplares.contarPorPlanta(comp.getPlanta());
+        	for (int i = 1; i <= comp.getCantidad(); i++) {
+        	    Ejemplares ej = new Ejemplares();
+        	    ej.setPlanta(comp.getPlanta());
+        	    ej.setNombre(comp.getPlanta().getCodigo() + "_" + (existentes + i));
+        	    ej.setLote(lote);
+        	    Ejemplares guardado = serviciosEjemplares.guardar(ej);
+
+        	    Mensajes m = new Mensajes();
+        	    m.setEjemplar(guardado);
+        	    m.setPersona(receptor);
+        	    m.setFecha(LocalDateTime.now());
+        	    m.setMensaje("Ejemplar " + ej.getNombre() + " recibido el " +
+        	            m.getFecha().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) +
+        	            " en el lote " + lote.getId() + " del proveedor " +
+        	            lote.getProveedor().getNombre() + " solicitado por " +
+        	            lote.getPersonaSolicitante().getNombre() + " y confirmado por " +
+        	            receptor.getNombre());
+
+        	    serviciosMensajes.guardar(m);
+        	}
         }
+
         return "redirect:/lotes/pendientes";
     }
-
 
 
 }

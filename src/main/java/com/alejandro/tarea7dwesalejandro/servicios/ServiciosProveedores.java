@@ -28,34 +28,63 @@ public class ServiciosProveedores {
         return proveedorRepository.findAll();
     }
 
+//    @Transactional
+//    public void registrarProveedorConCredenciales(RegistroProveedorDTO dto) {
+//        if (proveedorRepository.existsByCif(dto.getCif())) {
+//            throw new IllegalArgumentException("Ya existe un proveedor con ese CIF");
+//        }
+//        if (credencialesRepository.findByUsuario(dto.getUsuario()).isPresent()) {
+//            throw new IllegalArgumentException("Ese nombre de usuario ya está en uso");
+//        }
+//
+//        // Crear proveedor
+//        Proveedor proveedor = new Proveedor();
+//        proveedor.setNombre(dto.getNombre());
+//        proveedor.setCif(dto.getCif());
+//        proveedor.setRol("PROVEEDOR");
+//      
+//
+//
+//        // Crear credenciales
+//        Credenciales cred = new Credenciales();
+//        cred.setUsuario(dto.getUsuario());
+//        cred.setPassword(passwordEncoder.encode(dto.getPassword()));
+//        cred.setProveedor(proveedor);
+//        
+//
+//        credencialesRepository.save(cred);  
+//        proveedor.setCredenciales(cred);
+//        proveedorRepository.save(proveedor);
+//    }
+    
     @Transactional
     public void registrarProveedorConCredenciales(RegistroProveedorDTO dto) {
         if (proveedorRepository.existsByCif(dto.getCif())) {
             throw new IllegalArgumentException("Ya existe un proveedor con ese CIF");
         }
+
         if (credencialesRepository.findByUsuario(dto.getUsuario()).isPresent()) {
             throw new IllegalArgumentException("Ese nombre de usuario ya está en uso");
         }
 
-        // Crear proveedor
+        Credenciales cred = new Credenciales();
+        cred.setUsuario(dto.getUsuario());
+        cred.setPassword(passwordEncoder.encode(dto.getPassword()));
+        credencialesRepository.save(cred);
+
         Proveedor proveedor = new Proveedor();
         proveedor.setNombre(dto.getNombre());
         proveedor.setCif(dto.getCif());
         proveedor.setRol("PROVEEDOR");
-      
+        proveedor.setUsuario(dto.getUsuario()); 
+        proveedor.setCredenciales(cred);        
 
-
-        // Crear credenciales
-        Credenciales cred = new Credenciales();
-        cred.setUsuario(dto.getUsuario());
-        cred.setPassword(passwordEncoder.encode(dto.getPassword()));
-        cred.setProveedor(proveedor);
-        
-
-        credencialesRepository.save(cred);  
-        proveedor.setCredenciales(cred);
         proveedorRepository.save(proveedor);
+
+        cred.setProveedor(proveedor);
+        credencialesRepository.save(cred); 
     }
+
 
     public boolean cifYaExiste(String cif) {
         return proveedorRepository.existsByCif(cif);

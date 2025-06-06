@@ -6,7 +6,9 @@ import com.alejandro.tarea7dwesalejandro.modelo.Lote;
 import com.alejandro.tarea7dwesalejandro.modelo.Proveedor;
 import com.alejandro.tarea7dwesalejandro.servicios.ServiciosComposicionLote;
 import com.alejandro.tarea7dwesalejandro.servicios.ServiciosLotes;
+import com.alejandro.tarea7dwesalejandro.repositorios.ComposicionLoteRepository;
 import com.alejandro.tarea7dwesalejandro.repositorios.CredencialesRepository;
+import com.alejandro.tarea7dwesalejandro.repositorios.LoteRepository;
 import com.alejandro.tarea7dwesalejandro.repositorios.ProveedorRepository;
 
 import jakarta.servlet.http.HttpSession;
@@ -26,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/proveedor")
+@RequestMapping("/proveedores")
 @PreAuthorize("hasRole('PROVEEDOR')")
 public class LotesProveedorController {
 
@@ -41,6 +43,12 @@ public class LotesProveedorController {
     
     @Autowired
     private ProveedorRepository proveedorRepository;
+    
+    @Autowired
+    private ComposicionLoteRepository composicionLoteRepository;
+    
+    @Autowired
+    private LoteRepository loteRepository;
 
 //    @GetMapping("/misLotes")
 //    public String verMisLotes(Model model, HttpSession session) {
@@ -54,13 +62,34 @@ public class LotesProveedorController {
 //        return "proveedores/verMisLotes";
 //    }
     
+//    @GetMapping("/misLotes")
+//    public String verMisLotes(Model model, Authentication auth) {
+//        String username = auth.getName();
+//        List<Lote> lotes = serviciosLotes.obtenerLotesDelProveedor(username);
+//        model.addAttribute("lotes", lotes);
+//        return "proveedores/verMisLotes";
+//    }
+    
     @GetMapping("/misLotes")
     public String verMisLotes(Model model, Authentication auth) {
-        String username = auth.getName();
-        List<Lote> lotes = serviciosLotes.obtenerLotesDelProveedor(username);
+        String usuario = auth.getName();
+        Proveedor proveedor = credencialesRepository.findByUsuario(usuario)
+                .orElseThrow(() -> new RuntimeException("Credenciales no encontradas"))
+                .getProveedor();
+
+        List<Lote> lotes = loteRepository.findByProveedor(proveedor);
         model.addAttribute("lotes", lotes);
+
+        // Cargar composiciones de todos los lotes
+        Map<Long, List<ComposicionLote>> composiciones = new HashMap<>();
+        for (Lote lote : lotes) {
+            composiciones.put(lote.getId(), composicionLoteRepository.findByLote(lote));
+        }
+        model.addAttribute("composiciones", composiciones);
+
         return "proveedores/verMisLotes";
     }
+
 
     @PostMapping("/cancelarLote")
     public String cancelarLote(@RequestParam("idLote") Long idLote,
@@ -78,22 +107,22 @@ public class LotesProveedorController {
             redirectAttributes.addFlashAttribute("error", "No se puede cancelar el lote.");
         }
 
-        return "redirect:/proveedor/misLotes";
+        return "redirect:/proveedores/misLotes";
     }
     
-    @GetMapping("/pendientes")
-    public String mostrarPendientesRecepcion(Model model) {
-        List<Lote> pendientes = serviciosLotes.listarLotesPendientes();
-
-        Map<Long, List<ComposicionLote>> composiciones = new HashMap<>();
-        for (Lote lote : pendientes) {
-            composiciones.put(lote.getId(), serviciosComposicionLote.obtenerPorLote(lote));
-        }
-
-        model.addAttribute("pendientes", pendientes);
-        model.addAttribute("composiciones", composiciones);
-        return "lotes/pendientesRecepcion";
-    }
+//    @GetMapping("/pendientes")
+//    public String mostrarPendientesRecepcion(Model model) {
+//        List<Lote> pendientes = serviciosLotes.listarLotesPendientes();
+//
+//        Map<Long, List<ComposicionLote>> composiciones = new HashMap<>();
+//        for (Lote lote : pendientes) {
+//            composiciones.put(lote.getId(), serviciosComposicionLote.obtenerPorLote(lote));
+//        }
+//
+//        model.addAttribute("pendientes", pendientes);
+//        model.addAttribute("composiciones", composiciones);
+//        return "lotes/pendientesRecepcion";
+//    }
 
 
 

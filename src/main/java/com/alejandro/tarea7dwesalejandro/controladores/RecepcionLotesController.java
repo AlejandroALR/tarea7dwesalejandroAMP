@@ -46,53 +46,53 @@ public class RecepcionLotesController {
         return "lotes/pendientesRecepcion";
     }
 
-    @PostMapping("/confirmar")
-    @Transactional
-    public String confirmarRecepcion(@RequestParam Long idLote, Authentication auth) {
-        Lote lote = serviciosLotes.buscarPorId(idLote)
-                .orElseThrow(() -> new RuntimeException("Lote no encontrado"));
+//    @PostMapping("/confirmar")
+//    @Transactional
+//    public String confirmarRecepcion(@RequestParam Long idLote, Authentication auth) {
+//        Lote lote = serviciosLotes.buscarPorId(idLote)
+//                .orElseThrow(() -> new RuntimeException("Lote no encontrado"));
+//
+//        String username = auth.getName();
+//        Personas receptor = serviciosPersonas.buscarPorUsuario(username)
+//                .orElseThrow(() -> new RuntimeException("Persona no encontrada"));
+//
+//        lote.setFechaHoraRecepcion(LocalDateTime.now());
+//        serviciosLotes.guardar(lote);
+//
+//        List<ComposicionLote> composicion = serviciosComposicionLote.obtenerPorLote(lote);
+//
+//        for (ComposicionLote comp : composicion) {
+//        	long existentes = serviciosEjemplares.contarPorPlanta(comp.getPlanta());
+//        	for (int i = 1; i <= comp.getCantidad(); i++) {
+//        	    Ejemplares ej = new Ejemplares();
+//        	    ej.setPlanta(comp.getPlanta());
+//        	    ej.setNombre(comp.getPlanta().getCodigo() + "_" + (existentes + i));
+//        	    ej.setLote(lote);
+//        	    Ejemplares guardado = serviciosEjemplares.guardar(ej);
+//
+//        	    Mensajes m = new Mensajes();
+//        	    m.setEjemplar(guardado);
+//        	    m.setPersona(receptor);
+//        	    m.setFecha(LocalDateTime.now());
+//        	    m.setMensaje("Ejemplar " + ej.getNombre() + " recibido el " +
+//        	            m.getFecha().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) +
+//        	            " en el lote " + lote.getId() + " del proveedor " +
+//        	            lote.getProveedor().getNombre() + " solicitado por " +
+//        	            lote.getPersonaSolicitante().getNombre() + " y confirmado por " +
+//        	            receptor.getNombre());
+//
+//        	    serviciosMensajes.guardar(m);
+//        	}
+//        }
+//
+//        return "redirect:/personal/recepcionLotes";
+//    }
 
-        String username = auth.getName();
-        Personas receptor = serviciosPersonas.buscarPorUsuario(username)
-                .orElseThrow(() -> new RuntimeException("Persona no encontrada"));
-
-        lote.setFechaHoraRecepcion(LocalDateTime.now());
-        serviciosLotes.guardar(lote);
-
-        List<ComposicionLote> composicion = serviciosComposicionLote.obtenerPorLote(lote);
-
-        for (ComposicionLote comp : composicion) {
-            for (int i = 0; i < comp.getCantidad(); i++) {
-                long n = serviciosEjemplares.contarPorPlanta(comp.getPlanta());
-                Ejemplares ej = new Ejemplares();
-                ej.setPlanta(comp.getPlanta());
-                ej.setNombre(comp.getPlanta().getCodigo() + "_" + (n + 1));
-                ej.setLote(lote);
-                serviciosEjemplares.guardar(ej);
-
-                Mensajes m = new Mensajes();
-                m.setEjemplar(ej);
-                m.setPersona(receptor);
-                m.setFecha(LocalDateTime.now());
-                m.setMensaje("Ejemplar " + ej.getNombre() + " recibido el " +
-                        m.getFecha().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) +
-                        " en el lote " + lote.getId() + " del proveedor " +
-                        lote.getProveedor().getNombre() + " solicitado por " +
-                        lote.getPersonaSolicitante().getNombre() + " y confirmado por " +
-                        receptor.getNombre());
-
-                serviciosMensajes.guardar(m);
-            }
-        }
-
-        return "redirect:/personal/recepcionLotes";
-    }
-
-    @GetMapping("/recibidos")
-    public String verRecibidos(Model model) {
-        List<Lote> recibidos = serviciosLotes.listarLotesRecibidos();
-        model.addAttribute("recibidos", recibidos);
-        return "lotes/lotesRecibidos";
-    }
+//    @GetMapping("/recibidos")
+//    public String verRecibidos(Model model) {
+//        List<Lote> recibidos = serviciosLotes.listarLotesRecibidos();
+//        model.addAttribute("recibidos", recibidos);
+//        return "lotes/lotesRecibidos";
+//    }
 }
 

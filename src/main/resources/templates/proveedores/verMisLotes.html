@@ -76,15 +76,14 @@
                 <td th:text="${lote.estado}">Estado</td>
                 <td th:text="${lote.personaSolicitante.nombre}">Solicitado por</td>
                 <td>
-                    <ul>
-                        <li th:each="item : ${lote.items}"
-                            th:text="${item.planta != null} ? ${item.planta.nombreComun + ' (' + item.cantidad + ')'} : 'Sin planta'">
-                            -</li>
-                    </ul>
+                    <div th:each="comp : ${composiciones[lote.id]}">
+                        <span th:text="${comp.cantidad + 'x ' + comp.planta.nombreComun}"></span><br />
+                    </div>
                 </td>
 
+
                 <td>
-                    <form th:action="@{/proveedor/cancelarLote}" method="post"
+                    <form th:action="@{/proveedores/cancelarLote}" method="post"
                         th:if="${lote.estado != 'TERMINADO' and lote.estado != 'CANCELADO'}">
                         <input type="hidden" name="idLote" th:value="${lote.id}" />
                         <button type="submit">Cancelar</button>
