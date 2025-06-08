@@ -21,19 +21,19 @@ public class AdminProveedoresController {
 
     @GetMapping("/registrarProveedor")
     public String mostrarFormularioRegistroProveedor(Model model) {
-        model.addAttribute("proveedor", new RegistroProveedorDTO());
+        model.addAttribute("registroProveedor", new RegistroProveedorDTO());
         return "proveedores/registrarProveedor";
     }
 
     @PostMapping("/registrarProveedor")
     public String procesarFormularioRegistroProveedor(
-            @ModelAttribute("proveedor") @Valid RegistroProveedorDTO proveedorDTO,
+            @ModelAttribute("registroProveedor") @Valid RegistroProveedorDTO proveedorDTO,
             BindingResult result,
             RedirectAttributes redirectAttributes,
             Model model) {
 
         if (serviciosProveedores.usuarioYaExiste(proveedorDTO.getUsuario())) {
-            result.rejectValue("Usuario", null, "Ese nombre de usuario ya está en uso");
+            result.rejectValue("usuario", null, "Ese nombre de usuario ya está en uso");
         }
 
         if (serviciosProveedores.cifYaExiste(proveedorDTO.getCif())) {

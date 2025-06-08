@@ -16,9 +16,9 @@ public class RegistroProveedorDTO {
     private String usuario;
 
     @NotBlank(message = "La contraseña no puede estar vacía")
+    @Pattern(regexp = "\\S+", message = "No puede contener espacios")
     private String password;
 
-    // Getters y Setters
 
     public String getNombre() {
         return nombre;
